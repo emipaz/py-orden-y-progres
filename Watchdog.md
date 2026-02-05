@@ -6,7 +6,7 @@ Genial idea usar watchdog para automatizar cosas, es una librería muy potente y
 
 **2. Script de ejemplo que ya tienes creado**  
 Acabo de crear el archivo:  
-- 5-librerias/01_watchdog_basico.py  
+- 01_watchdog_basico.py  
 
 Este script:  
 - Crea (si no existe) una carpeta llamada `carpeta_a_vigilar` al lado del script.  
