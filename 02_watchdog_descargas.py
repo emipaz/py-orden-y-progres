@@ -121,19 +121,13 @@ def escribir_log(mensaje: str) -> None:
 
 
 class ManejadorDescargas(FileSystemEventHandler):
-    def on_created(self, event):
-        """Maneja la creación de un archivo nuevo en Descargas.
+    def _procesar_archivo_nuevo(self, ruta_archivo: Path) -> None:
+        """Aplica las comprobaciones y organiza un archivo recién disponible.
 
-        Ignora carpetas, el propio fichero de log y archivos temporales
-        de descarga, y delega la organización en ``mover_y_organizar``.
-
-        Args:
-            event: Evento de watchdog asociado a la creación del archivo.
+        Se usa tanto para on_created como para on_moved, ya que muchos
+        navegadores descargan primero con extensión temporal y luego
+        renombran al archivo definitivo.
         """
-        if event.is_directory:
-            return
-
-        ruta_archivo = Path(event.src_path)
 
         # No mover el propio fichero de log
         if ruta_archivo == FICHERO_LOG:
@@ -150,6 +144,36 @@ class ManejadorDescargas(FileSystemEventHandler):
             self.mover_y_organizar(ruta_archivo)
         except Exception as e:
             print(f"[ERROR] No se pudo mover {ruta_archivo}: {e}")
+
+    def on_created(self, event):
+        """Maneja la creación de un archivo nuevo en Descargas.
+
+        Ignora carpetas, el propio fichero de log y archivos temporales
+        de descarga, y delega la organización en ``mover_y_organizar``.
+
+        Args:
+            event: Evento de watchdog asociado a la creación del archivo.
+        """
+        if event.is_directory:
+            return
+
+        ruta_archivo = Path(event.src_path)
+        self._procesar_archivo_nuevo(ruta_archivo)
+
+    def on_moved(self, event):
+        """Maneja renombrados dentro de Descargas.
+
+        Navegadores como Chrome/Edge descargan primero con extensión
+        temporal (.crdownload, .part, ...) y luego renombran al nombre
+        final. Ese renombrado genera un evento on_moved, no on_created,
+        así que aquí tratamos el destino como un archivo "nuevo".
+        """
+
+        if event.is_directory:
+            return
+
+        ruta_destino = Path(event.dest_path)
+        self._procesar_archivo_nuevo(ruta_destino)
 
     def mover_y_organizar(self, ruta_archivo: Path) -> None:
         """Mueve un archivo a su carpeta de tipo/año/mes/quincena.
