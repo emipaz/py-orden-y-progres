@@ -1,2 +1,8 @@
 watchdog
 typer
+rich
+segno
+pillow
+pyzbar
+pyperclip
+cairosvg

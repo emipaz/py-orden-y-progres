@@ -10,6 +10,8 @@ Por ahora incluye:
 
 - [`watchdog`](https://pypi.org/project/watchdog/): automatización basada en cambios en el sistema de archivos.
 - [`typer`](https://typer.tiangolo.com/): creación de CLIs modernas y tipadas.
+- [`rich`](https://github.com/Textualize/rich): dashboards en consola y tablas con estilo.
+- [`segno`](https://pypi.org/project/segno/): generación de QR avanzada.
 
 La idea es ir sumando ejemplos con otras librerías útiles como `rich`, `pyautogui`,
 `invoke`, etc.
@@ -130,6 +132,49 @@ python 03_typer_organizador.py organizar -c "D:\\datos_brutos" --recursivo
 
 La lógica de clasificación es la misma que en el organizador de Descargas
 basado en `watchdog`.
+
+---
+
+## 3. QR Studio con Rich
+
+Script: `04_qr_studio_rich.py`
+
+Generador de QRs con estilos, logo centrado y lector de QRs desde imagen,
+con mini dashboard en consola usando `rich`.
+
+Documentacion completa: ver [QR_Studio.md](QR_Studio.md).
+
+### Requisitos
+
+- Python 3.8+.
+- Librerías:
+
+```bash
+python -m pip install rich segno pillow pyzbar
+```
+
+> En Windows, `pyzbar` puede requerir instalar ZBar. Si no decodifica,
+> instala ZBar desde su release oficial y asegúrate de que el DLL quede en PATH.
+
+### Uso
+
+Generar un QR con plantilla y logo placeholder:
+
+```bash
+python QRStudio.py generar "https://tusitio.com" --template ocean --salida qr_linkedin.png
+```
+
+Generar un QR con colores custom:
+
+```bash
+python QRStudio.py generar "Mi QR" --dark "#0b0b0b" --light "#f2efe8" --salida qr_custom.png
+```
+
+Leer un QR desde imagen:
+
+```bash
+python 04_qr_studio_rich.py leer qr_custom.png
+```
 
 ---
 
